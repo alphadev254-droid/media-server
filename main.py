@@ -5,7 +5,7 @@ from src.core.config import settings
 from src.core.logging import setup_logging, logger
 from src.core.security import cors_middleware_config
 from src.services.storage import ensure_buckets
-from src.routes import upload, media, metrics
+from src.routes import upload, media, metrics, serve
 
 setup_logging()
 
@@ -20,6 +20,7 @@ Instrumentator().instrument(app).expose(app, endpoint="/_internal/metrics")
 app.include_router(upload.router)
 app.include_router(media.router)
 app.include_router(metrics.router)
+app.include_router(serve.router)
 
 @app.on_event("startup")
 async def startup():
