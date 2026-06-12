@@ -1,6 +1,6 @@
-# Mediae other are public  Server — Usage Guide
+# Media Server — Usage Guide
 
-**Base URL:** `https://media.aircnc.co.ke`
+**Base URL:** `https://media.yourdomain.com` (or `http://localhost:3010` for local development)
 
 All endpoints require the `X-API-Key` header.
 
@@ -15,7 +15,7 @@ GET /health
 ```
 
 ```bash
-curl https://media.aircnc.co.ke/health
+curl https://media.yourdomain.com/health
 ```
 
 **Response:**
@@ -37,7 +37,7 @@ POST /upload/
 |---|---|---|
 | `X-API-Key` | ✅ | API key |
 | `X-Client-Id` | ✅ | Your system name e.g. `icims`, `aircnc` |
-| `X-Media-Base-Url` | ✅ | Must be `https://media.aircnc.co.ke` |
+| `X-Media-Base-Url` | ✅ | Must match your `ALLOWED_MEDIA_BASE_URLS` in `.env` |
 
 **Body:** `multipart/form-data` with field `file`
 
@@ -53,10 +53,10 @@ POST /upload/
 **Max size:** 100MB
 
 ```bash
-curl -X POST https://media.aircnc.co.ke/upload/ \
+curl -X POST https://media.yourdomain.com/upload/ \
   -H "X-API-Key: your_api_key" \
   -H "X-Client-Id: aircnc" \
-  -H "X-Media-Base-Url: https://media.aircnc.co.ke" \
+  -H "X-Media-Base-Url: https://media.yourdomain.com" \
   -F "file=@/path/to/photo.jpg"
 ```
 
@@ -65,7 +65,7 @@ curl -X POST https://media.aircnc.co.ke/upload/ \
 {
   "id": "a7690131-a5ef-4867-81c9-3467637a3835.webp",
   "bucket": "media-images",
-  "url": "https://media.aircnc.co.ke/media-images/a7690131-a5ef-4867-81c9-3467637a3835.webp",
+  "url": "https://media.yourdomain.com/media-images/a7690131-a5ef-4867-81c9-3467637a3835.webp",
   "size": 3100,
   "mime": "image/webp"
 }
@@ -82,7 +82,7 @@ DELETE /upload/{bucket}/{key}
 ```
 
 ```bash
-curl -X DELETE https://media.aircnc.co.ke/upload/media-images/a7690131-a5ef-4867-81c9-3467637a3835.webp \
+curl -X DELETE https://media.yourdomain.com/upload/media-images/a7690131-a5ef-4867-81c9-3467637a3835.webp \
   -H "X-API-Key: your_api_key"
 ```
 
@@ -102,14 +102,14 @@ GET /media/signed/{bucket}/{key}?expires=3600
 ```
 
 ```bash
-curl "https://media.aircnc.co.ke/media/signed/media-videos/uuid.mp4?expires=3600" \
+curl "https://media.yourdomain.com/media/signed/media-videos/uuid.mp4?expires=3600" \
   -H "X-API-Key: your_api_key"
 ```
 
 **Response:**
 ```json
 {
-  "url": "https://media.aircnc.co.ke/media-videos/uuid.mp4?X-Amz-Expires=3600&...",
+  "url": "https://media.yourdomain.com/media-videos/uuid.mp4?X-Amz-Expires=3600&...",
   "expires_in": 3600
 }
 ```
@@ -123,7 +123,7 @@ GET /metrics
 ```
 
 ```bash
-curl https://media.aircnc.co.ke/metrics \
+curl https://media.yourdomain.com/metrics \
   -H "X-Metrics-Token: your_metrics_token"
 ```
 
@@ -153,12 +153,12 @@ async function uploadMedia(filePath, clientId) {
   const form = new FormData()
   form.append('file', fs.createReadStream(filePath))
 
-  const res = await fetch('https://media.aircnc.co.ke/upload/', {
+  const res = await fetch('https://media.yourdomain.com/upload/', {
     method: 'POST',
     headers: {
       'X-API-Key': process.env.MEDIA_API_KEY,
       'X-Client-Id': clientId,
-      'X-Media-Base-Url': 'https://media.aircnc.co.ke',
+      'X-Media-Base-Url': 'https://media.yourdomain.com',
       ...form.getHeaders(),
     },
     body: form,
@@ -180,11 +180,11 @@ import httpx
 async def upload_media(file_bytes: bytes, filename: str, client_id: str):
     async with httpx.AsyncClient() as client:
         r = await client.post(
-            'https://media.aircnc.co.ke/upload/',
+            'https://media.yourdomain.com/upload/',
             headers={
                 'X-API-Key': settings.MEDIA_API_KEY,
                 'X-Client-Id': client_id,
-                'X-Media-Base-Url': 'https://media.aircnc.co.ke',
+                'X-Media-Base-Url': 'https://media.yourdomain.com',
             },
             files={'file': (filename, file_bytes)},
             timeout=60,
@@ -204,12 +204,12 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 
 Future<String> uploadMedia(List<int> bytes, String filename) async {
-  final uri = Uri.parse('https://media.aircnc.co.ke/upload/');
+  final uri = Uri.parse('https://media.yourdomain.com/upload/');
   final request = http.MultipartRequest('POST', uri)
     ..headers.addAll({
       'X-API-Key': 'your_api_key',
       'X-Client-Id': 'aircnc',
-      'X-Media-Base-Url': 'https://media.aircnc.co.ke',
+      'X-Media-Base-Url': 'https://media.yourdomain.com',
     })
     ..files.add(http.MultipartFile.fromBytes(
       'file',
@@ -235,13 +235,13 @@ const uploadMedia = async (file, clientId) => {
   form.append('file', file)
 
   const { data } = await axios.post(
-    'https://media.aircnc.co.ke/upload/',
+    'https://media.yourdomain.com/upload/',
     form,
     {
       headers: {
         'X-API-Key': import.meta.env.VITE_MEDIA_API_KEY,
         'X-Client-Id': clientId,
-        'X-Media-Base-Url': 'https://media.aircnc.co.ke',
+        'X-Media-Base-Url': 'https://media.yourdomain.com',
       },
     }
   )
@@ -265,6 +265,35 @@ const { url } = await uploadMedia(fileInput.files[0], 'aircnc')
 | 415 | File type not allowed |
 | 422 | Could not process image |
 | 500 | Server error |
+
+---
+
+## API Test Script
+
+A test script is included to verify all endpoints are working. It tests health, CORS, upload, public access, signed URLs, metrics, and delete — all in one run.
+
+```bash
+# Test the live server
+python test_api.py --host https://media.yourdomain.com --image "path/to/test.jpg"
+
+# Test locally
+python test_api.py --image "path/to/test.jpg"
+
+# Specify custom credentials
+python test_api.py --host https://media.yourdomain.com \
+  --image "bedsitter 2.jpg" \
+  --api-key "your_api_key" \
+  --metrics-token "your_metrics_token"
+```
+
+**What it checks:**
+- ✅ Health endpoint returns `{status: ok}`
+- ✅ CORS allows your origin, blocks others
+- ✅ Upload with valid/invalid/missing headers
+- ✅ File is publicly accessible after upload
+- ✅ Signed URL generation with expiry
+- ✅ Prometheus metrics with auth
+- ✅ Delete and re-delete (idempotent)
 
 ---
 

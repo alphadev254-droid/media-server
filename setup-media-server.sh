@@ -6,15 +6,15 @@
 
 set -e
 
-# ── CONFIG — edit before running ─────────────────────────────────────────────
+# ── CONFIG — ⚠ EDIT THESE before running ⚠ ──────────────────────────────────
 APP_DIR="/data/media-server"
 DATA_DIR="/data/minio"
-MINIO_USER="minio_user_alpha254x255xx255x255xx255x255"
-MINIO_PASS="minio_pass_hfge3et67r346tfdfwtyfydtf2635er"
-API_KEY="minio_api_key_hfge3ederhf347yf43t67r346tfdfwtyfydtf263er"
-METRICS_TOKEN="minio_metrics_token_hfge3edeyfdguy4t37r6d3g4r746tfdfwtyfydtf263er"
-ALLOWED_ORIGINS='["https://aircnc.co.ke"]'
-ALLOWED_MEDIA_BASE_URLS='["https://media.aircnc.co.ke"]'
+MINIO_USER="changeme_minio_user"
+MINIO_PASS="changeme_strong"
+API_KEY="changeme_api_key"
+METRICS_TOKEN="changeme_metrics_token"
+ALLOWED_ORIGINS='["https://yourdomain.com"]'
+ALLOWED_MEDIA_BASE_URLS='["https://media.yourdomain.com"]'
 PORT=3010
 
 # ── COLORS ───────────────────────────────────────────────────────────────────
