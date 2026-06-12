@@ -129,11 +129,49 @@ curl https://media.yourdomain.com/metrics \
 
 ---
 
+## File Serving & Access Control
+
+After upload, files are publicly accessible at:
+
+```
+GET /{bucket}/{key}
+```
+
+**Example:**
+```
+https://media.aircnc.co.ke/media-images/a7690131-a5ef-4867-81c9-3467637a3835.webp
+```
+
+### Origin Restriction (Nginx Level)
+
+File serving is handled directly by **Nginx**, which proxies `/media-images/` to MinIO. This avoids unnecessary Python overhead.
+
+Origin checking is enforced at the **Nginx level** — only allowed domains can embed/display the images. Direct access (no `Origin` header) is always permitted.
+
+**Currently allowed origins:**
+- `https://aircnc.co.ke` (and `www.`)
+- `https://churchcentral.church` (and `www.`)
+
+Requests from unlisted origins receive a **403 Forbidden**.
+
+### API CORS (FastAPI Level)
+
+The FastAPI CORS middleware (`ALLOWED_ORIGINS` in `.env`) controls which domains can make browser-based requests to the **API endpoints** (`/upload/`, `/delete/`, etc.). This is separate from file serving.
+
+### Cache
+
+Files are served with:
+```
+Cache-Control: public, max-age=31536000, immutable
+```
+
+---
+
 ## Buckets
 
 | Bucket | File types | Access |
 |---|---|---|
-| `media-images` | `jpg`, `png`, `gif`, `webp`, `svg` | Public |
+| `media-images` | `jpg`, `png`, `gif`, `webp`, `svg` | Public (origin-restricted via Nginx) |
 | `media-audio` | `mp3`, `wav`, `ogg`, `aac` | Public |
 | `media-documents` | `pdf`, `doc`, `docx` | Public |
 | `media-videos` | `mp4`, `webm`, `mov` | Public |
@@ -260,7 +298,7 @@ const { url } = await uploadMedia(fileInput.files[0], 'aircnc')
 | Code | Meaning |
 |---|---|
 | 400 | Missing `X-Media-Base-Url` header |
-| 403 | Invalid API key or disallowed media base URL |
+| 403 | Invalid API key, disallowed media base URL, or disallowed origin (Nginx) |
 | 413 | File too large (max 100MB) |
 | 415 | File type not allowed |
 | 422 | Could not process image |
